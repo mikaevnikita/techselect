@@ -20,6 +20,24 @@
 		<testcontainers.version>1.14.1</testcontainers.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>https://repo1.maven.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<!-- Repository used by many Vaadin add-ons -->
+		<repository>
+			<id>Vaadin Directory</id>
+			<url>https://maven.vaadin.com/vaadin-addons</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -100,7 +118,40 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.version}</version>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>prepare-frontend</goal>
+							<goal>build-frontend</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<compatibilityMode>false</compatibilityMode>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>production</id>
+			<properties>
+				<vaadin.productionMode>true</vaadin.productionMode>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.vaadin</groupId>
+					<artifactId>flow-server-production-mode</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 </project>
