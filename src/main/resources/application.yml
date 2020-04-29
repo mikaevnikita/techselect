@@ -5,7 +5,7 @@ spring:
     name: techselect
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgres://localhost:5432/techselect}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/techselect}
     username: ${SPRING_DATASOURCE_USERNAME:techselect}
     password: ${SPRING_DATASOURCE_PASSWORD:techselect}
   jpa:

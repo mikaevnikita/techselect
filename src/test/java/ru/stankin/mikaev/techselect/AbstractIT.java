@@ -1,7 +1,7 @@
 package ru.stankin.mikaev.techselect;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static ru.stankin.mikaev.techselect.config.Constants.TEST_PROFILE;
+import static ru.stankin.mikaev.techselect.constants.Constants.TEST_PROFILE;
 
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

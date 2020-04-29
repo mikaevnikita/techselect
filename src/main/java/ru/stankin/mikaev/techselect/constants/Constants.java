@@ -1,4 +1,4 @@
-package ru.stankin.mikaev.techselect.config;
+package ru.stankin.mikaev.techselect.constants;
 
 import lombok.experimental.UtilityClass;
 
