@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -27,6 +28,8 @@ public class Recommendation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "hibernate_sequence", sequenceName = "hibernate_sequence",
+                      schema = "techselect")
     private Long id;
 
     @NotEmpty
