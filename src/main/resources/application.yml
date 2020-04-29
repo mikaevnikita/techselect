@@ -13,6 +13,8 @@ spring:
       ddl-auto: validate
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      default_schema: techselect
   flyway:
     schemas: techselect
     locations: classpath:db/migration

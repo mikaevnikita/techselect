@@ -7,6 +7,13 @@ create schema if not exists techselect;
 
 SET SCHEMA 'techselect';
 
+-- Author: Nikita Mikaev
+-- Date: 2020-04-27
+
+-- Step #1: Creating hibernate sequence
+
+create sequence hibernate_sequence;
+
 create table if not exists question_meta (
     id bigint not null,
     text varchar(512) not null,
