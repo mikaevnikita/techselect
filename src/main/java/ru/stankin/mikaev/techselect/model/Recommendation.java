@@ -18,7 +18,7 @@ import javax.validation.constraints.NotEmpty;
  * @author Nikita_Mikaev
  */
 @Entity
-@Table(name = "recommendation")
+@Table(name = "recommendation", schema = "techselect")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

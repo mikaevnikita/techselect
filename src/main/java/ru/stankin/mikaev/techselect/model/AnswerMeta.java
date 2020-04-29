@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
  * @author Nikita_Mikaev
  */
 @Entity
-@Table(name = "answer_meta")
+@Table(name = "answer_meta", schema = "techselect")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

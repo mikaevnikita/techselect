@@ -5,18 +5,12 @@ spring:
     name: techselect
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/techselect}?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/techselect}
     username: ${SPRING_DATASOURCE_USERNAME:techselect}
     password: ${SPRING_DATASOURCE_PASSWORD:techselect}
   jpa:
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-        default_schema: techselect
-        format_sql: true
-        temp:
-          use_jdbc_metadata_defaults: false
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:

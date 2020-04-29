@@ -20,7 +20,7 @@ import java.util.UUID;
  * @author Nikita_Mikaev
  */
 @Entity
-@Table(name = "question")
+@Table(name = "question", schema = "techselect")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

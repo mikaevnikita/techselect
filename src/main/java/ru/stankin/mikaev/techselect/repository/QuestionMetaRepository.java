@@ -14,10 +14,10 @@ import java.util.Optional;
 public interface QuestionMetaRepository extends CrudRepository<QuestionMeta, Long> {
     Optional<QuestionMeta> findById(Long id);
 
-    @Query(value = "SELECT * FROM question_meta ORDER BY id ASC LIMIT 1",
+    @Query(value = "SELECT * FROM techselect.question_meta ORDER BY id ASC LIMIT 1",
             nativeQuery = true)
     QuestionMeta findFirstQuestion();
 
-    @Query(value = "SELECT count(id) FROM question_meta", nativeQuery = true)
+    @Query(value = "SELECT count(id) FROM techselect.question_meta", nativeQuery = true)
     Long getQuestionsCount();
 }

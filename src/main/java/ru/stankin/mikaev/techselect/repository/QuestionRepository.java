@@ -15,13 +15,13 @@ import java.util.UUID;
  */
 public interface QuestionRepository extends CrudRepository<Question, Long> {
 
-    @Query(value = "SELECT * FROM question WHERE session_id = :session_id ORDER BY id DESC LIMIT 1",
+    @Query(value = "SELECT * FROM techselect.question WHERE session_id = :session_id ORDER BY id DESC LIMIT 1",
             nativeQuery = true)
     Optional<Question> findLastQuestion(@Param("session_id") UUID sessionId);
 
     Optional<Question> findBySessionIdAndMetaId(UUID sessionId, Long metaId);
 
-    @Query(value = "SELECT count(id) FROM question WHERE session_id = :session_id", nativeQuery = true)
+    @Query(value = "SELECT count(id) FROM techselect.question WHERE session_id = :session_id", nativeQuery = true)
     Long getQuestionsCountByUser(@Param("session_id") UUID sessionId);
 
     List<Question> findAllBySessionId(@Param("session_id") UUID sessionId);
