@@ -18,4 +18,20 @@ import java.util.List;
 public class SurveyDto {
 
     private final List<QuestionDto> questions;
+
+    public QuestionDto getQuestionById(Long id){
+        return questions.stream().filter(q -> q.getId().equals(id)).findFirst().get();
+    }
+
+    public AnswerDto getAnswerById(Long id) {
+        return questions.stream()
+                .flatMap(q -> q.getAnswers().stream())
+                .filter(a -> a.getId().equals(id))
+                .findFirst()
+                .get();
+    }
+
+    public boolean isSelectedAnswer(Long id) {
+        return getAnswerById(id).isSelected();
+    }
 }

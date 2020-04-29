@@ -1,0 +1,138 @@
+package ru.stankin.mikaev.techselect.rules;
+
+dialect "mvel"
+
+import ru.stankin.mikaev.techselect.dto.RecommendationsHolder;
+import ru.stankin.mikaev.techselect.dto.SurveyDto;
+
+global  ru.stankin.mikaev.techselect.dto.RecommendationsHolder recommendations;
+
+rule "Наличие фронтенд разработчиков в команде - Да"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(1) )
+then
+    recommendations.addRecommendation(1L);
+end
+
+rule "Наличие фронтенд разработчиков в команде - Нет"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(2) )
+then
+    recommendations.addRecommendation(2L);
+end
+
+rule "Оцените опыт и способности работы вашей команды с реляционными СУБД  - Хороший или средний"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(5) || isSelectedAnswer(6) )
+then
+    recommendations.addRecommendation(3L);
+end
+
+rule "Оцените опыт и способности работы вашей команды с реляционными СУБД  - Низкий или отсутствует"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(7) || isSelectedAnswer(8) )
+then
+    recommendations.addRecommendation(4L);
+end
+
+rule "Микросервисы в облаке"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(3) && isSelectedAnswer(9) && isSelectedAnswer(21) )
+then
+    recommendations.addRecommendation(5L);
+end
+
+rule "Микросервисы не в облаке"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(3) && isSelectedAnswer(22) )
+then
+    recommendations.addRecommendation(6L);
+end
+
+rule "Монолит не в облаке"
+salience 100
+when
+   answer : SurveyDto( !isSelectedAnswer(3) && isSelectedAnswer(22))
+then
+    recommendations.addRecommendation(7L);
+end
+
+rule "Монолит в облаке"
+salience 100
+when
+   answer : SurveyDto( !isSelectedAnswer(3) && isSelectedAnswer(21) )
+then
+    recommendations.addRecommendation(8L);
+end
+
+rule "Должна ли система быть масштабируемой горизонтально - Да"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(11) )
+then
+    recommendations.addRecommendation(9L);
+end
+
+rule "Требуется ли функционал регистрации, авторизации и аутентификации - Да"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(13) )
+then
+    recommendations.addRecommendation(10L);
+end
+
+rule "Требуется ли аудит событий - Да"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(15) )
+then
+    recommendations.addRecommendation(11L);
+end
+
+rule "Синхронные интеграции"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(9) && isSelectedAnswer(19))
+then
+    recommendations.addRecommendation(12L);
+end
+
+rule "Множество интеграций - Camel"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(9) )
+then
+    recommendations.addRecommendation(13L);
+end
+
+rule "Асинхронные интеграции"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(9) && isSelectedAnswer(20))
+then
+    recommendations.addRecommendation(14L);
+end
+
+rule "Будет ли система являться корпоративным приложением с фиксированным числом пользователей - Нет"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(11) && isSelectedAnswer(24))
+then
+    recommendations.addRecommendation(15L);
+end
+
+rule "Должна ли система быть отказоустойчивой - Да"
+salience 100
+when
+   answer : SurveyDto( isSelectedAnswer(12) && isSelectedAnswer(25))
+then
+    recommendations.addRecommendation(16L);
+end
+
+

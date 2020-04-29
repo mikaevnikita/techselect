@@ -1,6 +1,7 @@
 package ru.stankin.mikaev.techselect.view;
 
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -29,11 +30,12 @@ public class MainView extends Div implements RouterLayout {
         H1 welcome = new H1(MainViewStaticTexts.welcome);
         Label about = new Label(MainViewStaticTexts.about);
         Button startSurveyButton = new Button(MainViewStaticTexts.startSurveyButtonText);
-        RouterLink routerLink = new RouterLink("", SurveyView.class);
-        routerLink.getElement().appendChild(startSurveyButton.getElement());
+        startSurveyButton.addClickListener(e -> {
+            UI.getCurrent().navigate(SurveyView.class);
+        });
         Div div = new Div();
         verticalLayout.setSizeFull();
-        verticalLayout.add(welcome, div, about, routerLink);
+        verticalLayout.add(welcome, div, about, startSurveyButton);
         verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         verticalLayout.setPadding(false);

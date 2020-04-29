@@ -114,7 +114,7 @@ public class SurveyView extends Div implements RouterLayout, AfterNavigationObse
             Optional<QuestionDto> nextQuestion =
                     surveyService.getNextQuestion(currentQuestion, sessionService.getSessionId());
             nextQuestion.ifPresentOrElse(this::render,
-                    () -> UI.getCurrent().navigate("results"));
+                    () -> UI.getCurrent().navigate(ResultsView.class));
         } else {
             Notification.show("Необходимо выбрать хотя бы один вариант ответа.");
         }
@@ -123,6 +123,6 @@ public class SurveyView extends Div implements RouterLayout, AfterNavigationObse
     @Override
     public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
         surveyService.getNextQuestion(currentQuestion, sessionService.getSessionId()).ifPresentOrElse(this::render,
-                () -> UI.getCurrent().navigate("results"));
+                () -> UI.getCurrent().navigate(ResultsView.class));
     }
 }

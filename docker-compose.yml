@@ -8,3 +8,8 @@ services:
     environment:
       - POSTGRES_USER=techselect
       - POSTGRES_PASSWORD=techselect
+  drools:
+    image: jboss/drools-workbench-showcase:latest
+    ports:
+      - 9090:8080
+      - 8001:8001
