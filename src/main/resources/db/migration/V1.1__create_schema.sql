@@ -23,7 +23,7 @@ create table if not exists answer_meta (
 
 create table if not exists question (
     id bigint not null,
-    session_id bigint not null,
+    session_id uuid not null,
     meta_id bigint not null,
     text varchar(512) not null,
     primary key (id),
@@ -33,7 +33,7 @@ create table if not exists question (
 
 create table if not exists answer (
     id bigint not null,
-    session_id bigint not null,
+    session_id uuid not null,
     question_id bigint not null,
     question_meta_id bigint not null,
     answer_meta_id bigint not null,

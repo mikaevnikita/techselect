@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
  * QuestionDto.
@@ -32,7 +33,7 @@ public class Question {
 
     @NotNull
     @Column(name = "session_id", nullable = false)
-    private Long sessionId;
+    private UUID sessionId;
 
     @NotNull
     @Column(name = "meta_id", nullable = false)

@@ -32,6 +32,7 @@ public class MainView extends Div implements RouterLayout {
         RouterLink routerLink = new RouterLink("", SurveyView.class);
         routerLink.getElement().appendChild(startSurveyButton.getElement());
         Div div = new Div();
+        verticalLayout.setSizeFull();
         verticalLayout.add(welcome, div, about, routerLink);
         verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);

@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stankin.mikaev.techselect.dto.AnswerDto;
 import ru.stankin.mikaev.techselect.dto.QuestionDto;
+import ru.stankin.mikaev.techselect.dto.SurveyDto;
 import ru.stankin.mikaev.techselect.exception.QuestionDoesNotContainsAnswerException;
+import ru.stankin.mikaev.techselect.exception.SurveyNotCompletedException;
 import ru.stankin.mikaev.techselect.model.Answer;
 import ru.stankin.mikaev.techselect.model.AnswerMeta;
 import ru.stankin.mikaev.techselect.model.Question;
@@ -14,8 +16,10 @@ import ru.stankin.mikaev.techselect.repository.AnswerMetaRepository;
 import ru.stankin.mikaev.techselect.repository.AnswerRepository;
 import ru.stankin.mikaev.techselect.repository.QuestionMetaRepository;
 import ru.stankin.mikaev.techselect.repository.QuestionRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -31,8 +35,6 @@ public class SurveyService {
     private final AnswerMetaRepository answerMetaRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
-
-    private static final Long SESSION_ID = 1L;
 
     private AnswerDto mapToAnswer(AnswerMeta answerMeta) {
         return AnswerDto.builder()
@@ -56,9 +58,9 @@ public class SurveyService {
                 .build();
     }
 
-    public Optional<QuestionDto> getNextQuestion(QuestionDto questionDto) {
+    public Optional<QuestionDto> getNextQuestion(QuestionDto questionDto, UUID sessionId) {
         if (questionDto == null) {
-            Optional<Question> lastQuestion = questionRepository.findLastQuestion(SESSION_ID);
+            Optional<Question> lastQuestion = questionRepository.findLastQuestion(sessionId);
             if (lastQuestion.isPresent()) {
                 Long lastQuestionMetaId = lastQuestion.get().getMetaId();
                 Optional<QuestionMeta> nextQuestionMetaOpt = questionMetaRepository.findById(lastQuestionMetaId + 1);
@@ -66,7 +68,7 @@ public class SurveyService {
                     QuestionMeta nextQuestionMeta = nextQuestionMetaOpt.get();
                     List<AnswerMeta> questionAnswers =
                             answerMetaRepository.findAllByQuestionMetaId(nextQuestionMeta.getId());
-                    Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(SESSION_ID,
+                    Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(sessionId,
                             nextQuestionMeta.getId());
                     QuestionDto resultQuestionDto = buildQuestionWithAnswers(nextQuestionMeta, questionAnswers);
                     if (selectedAnswer != null) {
@@ -87,7 +89,7 @@ public class SurveyService {
                 QuestionMeta nextQuestionMeta = nextQuestionMetaOpt.get();
                 List<AnswerMeta> questionAnswers =
                         answerMetaRepository.findAllByQuestionMetaId(nextQuestionMeta.getId());
-                Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(SESSION_ID,
+                Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(sessionId,
                         nextQuestionMeta.getId());
                 QuestionDto resultQuestionDto = buildQuestionWithAnswers(nextQuestionMeta, questionAnswers);
                 if (selectedAnswer != null) {
@@ -99,14 +101,14 @@ public class SurveyService {
         return Optional.empty();
     }
 
-    public Optional<QuestionDto> getPrevQuestion(QuestionDto currentQuestion) {
-        Optional<Question> lastQuestion = questionRepository.findBySessionIdAndMetaId(SESSION_ID,
+    public Optional<QuestionDto> getPrevQuestion(QuestionDto currentQuestion, UUID sessionId) {
+        Optional<Question> lastQuestion = questionRepository.findBySessionIdAndMetaId(sessionId,
                 currentQuestion.getId() - 1);
         if (lastQuestion.isPresent()) {
             Question question = lastQuestion.get();
             QuestionMeta questionMeta = questionMetaRepository.findById(question.getMetaId()).get();
             List<AnswerMeta> questionAnswers = answerMetaRepository.findAllByQuestionMetaId(questionMeta.getId());
-            Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(SESSION_ID, questionMeta.getId());
+            Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(sessionId, questionMeta.getId());
             QuestionDto questionDto = buildQuestionWithAnswers(questionMeta, questionAnswers);
             questionDto.setSelectedAnswer(selectedAnswer.getAnswerMetaId());
             return Optional.of(questionDto);
@@ -122,16 +124,16 @@ public class SurveyService {
     }
 
     @Transactional
-    public void sumbitAnswer(QuestionDto questionDto, AnswerDto answerDto) {
+    public void sumbitAnswer(QuestionDto questionDto, AnswerDto answerDto, UUID sessionId) {
         checkIsAssignable(questionDto, answerDto);
-        Answer answer = answerRepository.findBySessionIdAndQuestionMetaId(SESSION_ID, questionDto.getId());
+        Answer answer = answerRepository.findBySessionIdAndQuestionMetaId(sessionId, questionDto.getId());
         if (answer != null) {
             answer.setAnswerMetaId(answerDto.getId());
             answer.setText(answerDto.getText());
         } else {
             Question question = Question.builder()
                     .metaId(questionDto.getId())
-                    .sessionId(SESSION_ID)
+                    .sessionId(sessionId)
                     .text(questionDto.getText())
                     .build();
             question = questionRepository.save(question);
@@ -140,9 +142,31 @@ public class SurveyService {
                     .questionId(question.getId())
                     .questionMetaId(question.getMetaId())
                     .text(answerDto.getText())
-                    .sessionId(SESSION_ID)
+                    .sessionId(sessionId)
                     .build();
         }
         answerRepository.save(answer);
+    }
+
+    public SurveyDto getCompletedSurvey(UUID sessionId) {
+        Long questionsCount = questionMetaRepository.getQuestionsCount();
+        Long questionsCountByUser = questionRepository.getQuestionsCountByUser(sessionId);
+        if (questionsCountByUser != questionsCount) {
+            throw new SurveyNotCompletedException();
+        }
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        List<Question> allBySessionId = questionRepository.findAllBySessionId(sessionId);
+        for (Question question : allBySessionId) {
+            QuestionMeta questionMeta = questionMetaRepository.findById(question.getMetaId()).get();
+            List<AnswerMeta> questionAnswers =
+                    answerMetaRepository.findAllByQuestionMetaId(questionMeta.getId());
+            Answer selectedAnswer = answerRepository.findBySessionIdAndQuestionMetaId(sessionId, questionMeta.getId());
+            QuestionDto resultQuestionDto = buildQuestionWithAnswers(questionMeta, questionAnswers);
+            if (selectedAnswer != null) {
+                resultQuestionDto.setSelectedAnswer(selectedAnswer.getAnswerMetaId());
+            }
+            questionDtos.add(resultQuestionDto);
+        }
+        return new SurveyDto(questionDtos);
     }
 }

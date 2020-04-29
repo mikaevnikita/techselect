@@ -1,5 +1,6 @@
 package ru.stankin.mikaev.techselect.view;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -21,10 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.stankin.mikaev.techselect.dto.AnswerDto;
 import ru.stankin.mikaev.techselect.dto.QuestionDto;
+import ru.stankin.mikaev.techselect.service.SessionService;
 import ru.stankin.mikaev.techselect.service.SurveyService;
 import java.util.Optional;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 /**
  * SurveyView.
@@ -44,6 +44,9 @@ public class SurveyView extends Div implements RouterLayout, AfterNavigationObse
 
     @Autowired
     private SurveyService surveyService;
+
+    @Autowired
+    private SessionService sessionService;
 
     private QuestionDto currentQuestion;
 
@@ -98,7 +101,7 @@ public class SurveyView extends Div implements RouterLayout, AfterNavigationObse
     }
 
     public void showPrevQuestion() {
-        Optional<QuestionDto> prevQuestion = surveyService.getPrevQuestion(currentQuestion);
+        Optional<QuestionDto> prevQuestion = surveyService.getPrevQuestion(currentQuestion, sessionService.getSessionId());
         if (prevQuestion.isPresent()) {
             QuestionDto questionDto = prevQuestion.get();
             render(questionDto);
@@ -107,10 +110,11 @@ public class SurveyView extends Div implements RouterLayout, AfterNavigationObse
 
     public void submitAnswer() {
         if (answerGroup.getValue() != null) {
-            surveyService.sumbitAnswer(currentQuestion, answerGroup.getValue());
+            surveyService.sumbitAnswer(currentQuestion, answerGroup.getValue(), sessionService.getSessionId());
             Optional<QuestionDto> nextQuestion =
-                    surveyService.getNextQuestion(currentQuestion);
-            nextQuestion.ifPresentOrElse(this::render, () -> Notification.show("Дальше вопросов нет."));
+                    surveyService.getNextQuestion(currentQuestion, sessionService.getSessionId());
+            nextQuestion.ifPresentOrElse(this::render,
+                    () -> UI.getCurrent().navigate("results"));
         } else {
             Notification.show("Необходимо выбрать хотя бы один вариант ответа.");
         }
@@ -118,6 +122,7 @@ public class SurveyView extends Div implements RouterLayout, AfterNavigationObse
 
     @Override
     public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
-        surveyService.getNextQuestion(currentQuestion).ifPresent(this::render);
+        surveyService.getNextQuestion(currentQuestion, sessionService.getSessionId()).ifPresentOrElse(this::render,
+                () -> UI.getCurrent().navigate("results"));
     }
 }
