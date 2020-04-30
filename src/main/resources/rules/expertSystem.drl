@@ -42,9 +42,10 @@ end
 rule "Микросервисы в облаке"
 salience 100
 when
-   answer : SurveyDto( isSelectedAnswer(3) && isSelectedAnswer(9) && isSelectedAnswer(21) )
+   answer : SurveyDto( isSelectedAnswer(3) && isSelectedAnswer(21) )
 then
     recommendations.addRecommendation(5L);
+    recommendations.addRecommendation(17L);
 end
 
 rule "Микросервисы не в облаке"
@@ -55,20 +56,21 @@ then
     recommendations.addRecommendation(6L);
 end
 
-rule "Монолит не в облаке"
-salience 100
-when
-   answer : SurveyDto( !isSelectedAnswer(3) && isSelectedAnswer(22))
-then
-    recommendations.addRecommendation(7L);
-end
-
 rule "Монолит в облаке"
 salience 100
 when
    answer : SurveyDto( !isSelectedAnswer(3) && isSelectedAnswer(21) )
 then
     recommendations.addRecommendation(8L);
+    recommendations.addRecommendation(17L);
+end
+
+rule "Монолит не в облаке"
+salience 100
+when
+   answer : SurveyDto( !isSelectedAnswer(3) && isSelectedAnswer(22))
+then
+    recommendations.addRecommendation(7L);
 end
 
 rule "Должна ли система быть масштабируемой горизонтально - Да"
@@ -130,7 +132,7 @@ end
 rule "Должна ли система быть отказоустойчивой - Да"
 salience 100
 when
-   answer : SurveyDto( isSelectedAnswer(12) && isSelectedAnswer(25))
+   answer : SurveyDto( isSelectedAnswer(25))
 then
     recommendations.addRecommendation(16L);
 end
