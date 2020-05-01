@@ -37,7 +37,7 @@ public class ExpertService {
         return holder.getRecommendations().stream()
                 .flatMap(recommendationDto ->
                         recommendationRepository.findById(recommendationDto.getRecommendationId()).stream())
-                .map(entity -> new RecommendationTextDto(entity.getText()))
+                .map(entity -> new RecommendationTextDto(entity.getId(), entity.getText()))
                 .collect(Collectors.toList());
     }
 }

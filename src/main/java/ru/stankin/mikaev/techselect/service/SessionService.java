@@ -13,9 +13,17 @@ import java.util.UUID;
 @Service
 @VaadinSessionScope
 public class SessionService {
-    private UUID sessionId = UUID.randomUUID();
+    private UUID sessionId;
+
+    public SessionService() {
+        startNewSession();
+    }
 
     public UUID getSessionId(){
         return sessionId;
+    }
+
+    public void startNewSession() {
+        sessionId = UUID.randomUUID();
     }
 }
